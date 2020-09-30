@@ -124,7 +124,7 @@ class TestStop(object):
         mock_mth_handler = mocker.MagicMock()
         msg_inbox = inbox_manager.get_unified_message_inbox()
         mth_inbox = inbox_manager.get_method_request_inbox()
-        for _ in range(500):  # sufficiently many items so can't complete quickly
+        for _ in range(300):  # sufficiently many items so can't complete quickly
             msg_inbox._put(mocker.MagicMock())
             mth_inbox._put(mocker.MagicMock())
 
@@ -132,14 +132,14 @@ class TestStop(object):
         hm.on_method_request_received = mock_mth_handler
         assert not msg_inbox.empty()
         assert not mth_inbox.empty()
-        assert mock_msg_handler.call_count < 500
-        assert mock_mth_handler.call_count < 500
+        assert mock_msg_handler.call_count < 300
+        assert mock_mth_handler.call_count < 300
         hm.stop()
         await asyncio.sleep(1)
         assert msg_inbox.empty()
         assert mth_inbox.empty()
-        assert mock_msg_handler.call_count == 500
-        assert mock_mth_handler.call_count == 500
+        assert mock_msg_handler.call_count == 300
+        assert mock_mth_handler.call_count == 300
 
 
 @pytest.mark.describe("AsyncHandlerManager - .ensure_running()")
