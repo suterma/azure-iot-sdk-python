@@ -138,8 +138,6 @@ class TestStop(object):
         hm.on_method_request_received = mock_mth_handler
         assert mock_msg_handler.call_count < 150
         assert mock_mth_handler.call_count < 150
-        assert not msg_inbox.empty()
-        assert not mth_inbox.empty()
         hm.stop()
         await asyncio.sleep(1)
         assert mock_msg_handler.call_count == 150

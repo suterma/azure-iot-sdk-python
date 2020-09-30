@@ -269,9 +269,9 @@ class SharedHandlerPropertyTests(object):
         "Is invoked for every item already in the corresponding Inbox at the moment of handler removal"
     )
     def test_handler_resolve_pending_items_before_handler_removal(
-        self, mocker, handler_name, handler_manager, handler, inbox
+        self, mocker, handler_name, handler_manager, inbox
     ):
-        mock_handler = mocker.MagicMock(wraps=handler)
+        mock_handler = mocker.MagicMock()
         assert inbox.empty()
         # Queue up a bunch of items in the inbox
         for _ in range(100):
