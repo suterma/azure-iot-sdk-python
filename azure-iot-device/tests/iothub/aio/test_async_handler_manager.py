@@ -124,7 +124,7 @@ class TestStop(object):
         mock_mth_handler = mocker.MagicMock()
         msg_inbox = inbox_manager.get_unified_message_inbox()
         mth_inbox = inbox_manager.get_method_request_inbox()
-        for _ in range(1000):  # sufficiently many items so can't complete quickly
+        for _ in range(800):  # sufficiently many items so can't complete quickly
             msg_inbox._put(mocker.MagicMock())
             mth_inbox._put(mocker.MagicMock())
 
@@ -132,14 +132,14 @@ class TestStop(object):
         hm.on_method_request_received = mock_mth_handler
         assert not msg_inbox.empty()
         assert not mth_inbox.empty()
-        assert mock_msg_handler.call_count != 1000
-        assert mock_mth_handler.call_count != 1000
+        assert mock_msg_handler.call_count < 800
+        assert mock_mth_handler.call_count < 800
         hm.stop()
         await asyncio.sleep(1)
         assert msg_inbox.empty()
         assert mth_inbox.empty()
-        assert mock_msg_handler.call_count == 1000
-        assert mock_mth_handler.call_count == 1000
+        assert mock_msg_handler.call_count == 800
+        assert mock_mth_handler.call_count == 800
 
 
 @pytest.mark.describe("AsyncHandlerManager - .ensure_running()")
@@ -424,19 +424,19 @@ class SharedHandlerPropertyTests(object):
         setattr(handler_manager, handler_name, handler1)
 
         inbox._put(mocker.MagicMock())
-        await asyncio.sleep(0.2)
+        await asyncio.sleep(0.5)
         # The set handler (handler1) has been replaced with a new handler (handler2)
         assert getattr(handler_manager, handler_name) is not handler1
         assert getattr(handler_manager, handler_name) is handler2
         # Add a new item to the inbox
         inbox._put(mocker.MagicMock())
-        await asyncio.sleep(0.2)
+        await asyncio.sleep(0.5)
         # The set handler (handler2) has now been replaced by a mock handler
         assert getattr(handler_manager, handler_name) is not handler2
         assert getattr(handler_manager, handler_name) is mock_handler
         # Add a new item to the inbox
         inbox._put(mocker.MagicMock())
-        await asyncio.sleep(0.2)
+        await asyncio.sleep(0.5)
         # The mock was now called
         assert getattr(handler_manager, handler_name).call_count == 1
 
