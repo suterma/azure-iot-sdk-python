@@ -136,16 +136,16 @@ class TestStop(object):
 
         hm.on_message_received = mock_msg_handler
         hm.on_method_request_received = mock_mth_handler
-        assert not msg_inbox.empty()
-        assert not mth_inbox.empty()
         assert mock_msg_handler.call_count < 150
         assert mock_mth_handler.call_count < 150
+        assert not msg_inbox.empty()
+        assert not mth_inbox.empty()
         hm.stop()
         await asyncio.sleep(1)
-        assert msg_inbox.empty()
-        assert mth_inbox.empty()
         assert mock_msg_handler.call_count == 150
         assert mock_mth_handler.call_count == 150
+        assert msg_inbox.empty()
+        assert mth_inbox.empty()
 
 
 @pytest.mark.describe("AsyncHandlerManager - .ensure_running()")
