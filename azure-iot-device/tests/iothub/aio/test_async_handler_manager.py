@@ -135,7 +135,7 @@ class TestStop(object):
         assert mock_msg_handler.call_count != 1000
         assert mock_mth_handler.call_count != 1000
         hm.stop()
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(1)
         assert msg_inbox.empty()
         assert mth_inbox.empty()
         assert mock_msg_handler.call_count == 1000
