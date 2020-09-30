@@ -116,7 +116,7 @@ class TestStop(object):
             assert handler_manager._handler_runners[handler_name] is None
 
     @pytest.mark.it("Completes all pending handler invocations before stopping the runner(s)")
-    def test_completes_pending(self, mocker, inbox_manager):
+    async def test_completes_pending(self, mocker, inbox_manager):
         hm = AsyncHandlerManager(inbox_manager)
 
         # NOTE: We use two handlers arbitrarily here to show this happens for all handler runners
@@ -135,6 +135,7 @@ class TestStop(object):
         assert mock_msg_handler.call_count != 1000
         assert mock_mth_handler.call_count != 1000
         hm.stop()
+        await asyncio.sleep(0.5)
         assert msg_inbox.empty()
         assert mth_inbox.empty()
         assert mock_msg_handler.call_count == 1000

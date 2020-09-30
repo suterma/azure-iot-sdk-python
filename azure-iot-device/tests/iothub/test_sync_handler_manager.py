@@ -97,6 +97,7 @@ class TestStop(object):
         assert mock_msg_handler.call_count != 1000
         assert mock_mth_handler.call_count != 1000
         hm.stop()
+        time.sleep(0.5)
         assert msg_inbox.empty()
         assert mth_inbox.empty()
         assert mock_msg_handler.call_count == 1000
