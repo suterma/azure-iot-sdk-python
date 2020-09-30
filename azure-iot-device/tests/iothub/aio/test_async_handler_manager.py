@@ -346,7 +346,7 @@ class SharedHandlerPropertyTests(object):
         # Immediately remove the handler
         setattr(handler_manager, handler_name, None)
         # Wait to give a chance for the handler runner to finish calling everything
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(1)
         # Despite removal, handler has been called for everything that was in the inbox at the
         # time of the removal
         assert handler_checker.handler_call_count == 100
