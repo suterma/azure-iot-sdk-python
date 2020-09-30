@@ -338,18 +338,16 @@ class SharedHandlerPropertyTests(object):
         setattr(handler_manager, handler_name, handler)
         # The handler has not yet been called for everything that was in the inbox
         # (but it has started the process)
-        await asyncio.sleep(0.05)
-        # assert not inbox.empty()
+        await asyncio.sleep(0.01)
         assert 0 < handler_checker.handler_call_count < 100
-        # assert handler_checker.handler_call_count < 100
         # Immediately remove the handler
         setattr(handler_manager, handler_name, None)
         # Wait to give a chance for the handler runner to finish calling everything
         await asyncio.sleep(0.5)
         # Despite removal, handler has been called for everything that was in the inbox at the
         # time of the removal
-        assert inbox.empty()
         assert handler_checker.handler_call_count == 100
+        assert inbox.empty()
 
         # Add some more items
         for _ in range(100):
