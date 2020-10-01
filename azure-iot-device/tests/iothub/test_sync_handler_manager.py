@@ -290,7 +290,7 @@ class SharedHandlerPropertyTests(object):
         # Immediately remove the handler
         setattr(handler_manager, handler_name, None)
         # Wait to give a chance for the handler runner to finish calling everything
-        time.sleep(2)
+        time.sleep(10)
         # Despite removal, handler has been called for everything that was in the inbox at the
         # time of the removal
         assert mock_handler.call_count == 100
