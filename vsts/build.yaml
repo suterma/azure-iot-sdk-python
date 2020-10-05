@@ -47,7 +47,10 @@ jobs:
   - script: 'python env_setup.py --no_dev'
     displayName: 'Prepare environment (install packages + dependencies + tools)'
 
-  - script: 'python test_packages.py'
+  - script: 'pip install pytest-repeat'
+    displayName: pt-repeat
+
+  - script: 'pytest --count=200 -k test_handler_resolve_pending_items_before_handler_removal  ./azure-iot-device/tests/iothub/test_sync_handler_manager.py'
     displayName: pytest
 
   - task: PublishTestResults@2
