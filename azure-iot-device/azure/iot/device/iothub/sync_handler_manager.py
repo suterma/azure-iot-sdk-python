@@ -164,10 +164,13 @@ class SyncHandlerManager(AbstractHandlerManager):
         """
         logger.debug("HANDLER RUNNER ({}): Starting runner".format(handler_name))
         future_count = 0
+        lock = threading.Lock()
 
         # Define a callback that can handle errors in the ThreadPoolExecutor
         def _handler_callback(future):
-            logger.debug("HANDLER ({}): callback for handler #{}".format(handler_name, fut.count))
+            logger.debug(
+                "HANDLER ({}): callback for handler #{}".format(handler_name, future.count)
+            )
             try:
                 e = future.exception(timeout=0)
             except Exception as raised_e:
@@ -218,8 +221,9 @@ class SyncHandlerManager(AbstractHandlerManager):
             handler = getattr(self, handler_name)
             logger.debug("HANDLER RUNNER ({}): Invoking handler".format(handler_name))
             fut = tpe.submit(handler, handler_arg)
-            fut.count = future_count
-            future_count += 1
+            with lock:
+                fut.count = future_count
+                future_count += 1
             logger.debug(
                 "HANDLER RUNNER ({}): just invoked handler # {}".format(handler_name, fut.count)
             )
