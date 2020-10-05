@@ -12,6 +12,7 @@ from azure.iot.device.iothub.sync_handler_manager import SyncHandlerManager, Han
 from azure.iot.device.iothub.sync_handler_manager import MESSAGE, METHOD, TWIN_DP_PATCH
 from azure.iot.device.iothub.inbox_manager import InboxManager
 from azure.iot.device.iothub.sync_inbox import SyncClientInbox
+from pprint import pprint
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -265,6 +266,7 @@ class SharedHandlerPropertyTests(object):
         # Handler has been called 5 times
         assert mock_handler.call_count == 5
 
+    # BKTODO
     @pytest.mark.it(
         "Is invoked for every item already in the corresponding Inbox at the moment of handler removal"
     )
@@ -275,11 +277,14 @@ class SharedHandlerPropertyTests(object):
         assert inbox.empty()
         # Queue up a bunch of items in the inbox
         for _ in range(100):
-            inbox._put(mocker.MagicMock())
+            mock = mocker.MagicMock()
+            mock.index = _
+            inbox._put(mock)
         # The handler has not yet been called
         assert mock_handler.call_count == 0
         # Items are still in the inbox
-        assert not inbox.empty()
+        assert inbox._queue.qsize() == 100
+
         # Set the handler
         setattr(handler_manager, handler_name, mock_handler)
         # The handler has not yet been called for everything that was in the inbox
@@ -293,6 +298,10 @@ class SharedHandlerPropertyTests(object):
         time.sleep(1)
         # Despite removal, handler has been called for everything that was in the inbox at the
         # time of the removal
+        if mock_handler.call_count != 100:
+            print("ERROR")
+            pprint(inbox._queue.__dict__)
+
         assert mock_handler.call_count == 100
         assert inbox.empty()
 

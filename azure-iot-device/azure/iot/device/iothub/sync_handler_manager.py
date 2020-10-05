@@ -163,9 +163,11 @@ class SyncHandlerManager(AbstractHandlerManager):
         the handler with that object
         """
         logger.debug("HANDLER RUNNER ({}): Starting runner".format(handler_name))
+        future_count = 0
 
         # Define a callback that can handle errors in the ThreadPoolExecutor
         def _handler_callback(future):
+            logger.debug("HANDLER ({}): callback for handler #{}".format(handler_name, fut.count))
             try:
                 e = future.exception(timeout=0)
             except Exception as raised_e:
@@ -199,11 +201,16 @@ class SyncHandlerManager(AbstractHandlerManager):
             if isinstance(handler_arg, HandlerRunnerKillerSentinel):
                 # Exit the runner when a HandlerRunnerKillerSentinel is found
                 logger.debug(
-                    "HANDLER RUNNER ({}): HandlerRunnerKillerSentinel found in inbox. Exiting.".format(
+                    "AAA HANDLER RUNNER ({}): HandlerRunnerKillerSentinel found in inbox. Exiting.".format(
                         handler_name
                     )
                 )
-                tpe.shutdown()
+                try:
+                    tpe.shutdown(wait=True)  # BKTODO
+                except Exception as e:
+                    logger.error("AAA", exc_info=e)
+                    raise
+                logger.debug("AAA HANDLER RUNNER ({}): done shutting down".format(handler_name))
                 break
             # NOTE: we MUST use getattr here using the handler name, as opposed to directly passing
             # the handler in order for the handler to be able to be updated without cancelling
@@ -211,6 +218,11 @@ class SyncHandlerManager(AbstractHandlerManager):
             handler = getattr(self, handler_name)
             logger.debug("HANDLER RUNNER ({}): Invoking handler".format(handler_name))
             fut = tpe.submit(handler, handler_arg)
+            fut.count = future_count
+            future_count += 1
+            logger.debug(
+                "HANDLER RUNNER ({}): just invoked handler # {}".format(handler_name, fut.count)
+            )
             fut.add_done_callback(_handler_callback)
 
     def _event_handler_runner(self, handler_name):
