@@ -50,7 +50,7 @@ jobs:
   - script: 'pip install pytest-repeat'
     displayName: pt-repeat
 
-  - script: 'pytest --count=200 -k test_handler_resolve_pending_items_before_handler_removal  ./azure-iot-device/tests/iothub/test_sync_handler_manager.py'
+  - script: 'pytest --count=200 -k test_handler_resolve_pending_items_before_handler_removal  ./azure-iot-device/tests/iothub/test_sync_handler_manager.py --junitxml=junit/azure-test-results.xml --cov=azure --cov-report=xml:coverage.xml --cov-report=html:coverage --cov-append"
     displayName: pytest
 
   - task: PublishTestResults@2
